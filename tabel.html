@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Data Penyiraman Terakhir</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #1e1e1e;
+      color: #f1f1f1;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: auto;
+    }
+
+    h1 {
+      text-align: center;
+      color: #8bc34a;
+      margin-bottom: 30px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background-color: #2c2c2c;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    th, td {
+      padding: 12px 15px;
+      text-align: center;
+    }
+
+    th {
+      background-color: #424242;
+      color: #fff;
+    }
+
+    tr:nth-child(even) {
+      background-color: #333;
+    }
+
+    tr:hover {
+      background-color: #444;
+    }
+
+    a.back-link {
+      display: inline-block;
+      margin-top: 30px;
+      background-color: #4caf50;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: bold;
+      transition: 0.3s;
+    }
+
+    a.back-link:hover {
+      background-color: #388e3c;
+    }
+
+    footer {
+      text-align: center;
+      font-size: 12px;
+      color: #888;
+      margin-top: 40px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>📊 Data 10 Penyiraman Terakhir</h1>
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Suhu (°C)</th>
+          <th>Kelembaban (%)</th>
+        </tr>
+      </thead>
+      <tbody id="data-body">
+        <tr><td colspan="3">Memuat data...</td></tr>
+      </tbody>
+    </table>
+
+    <div style="text-align:center;">
+      <a href="index.html" class="back-link">⬅️ Kembali ke Monitoring</a>
+    </div>
+
+    <footer>
+      Data diambil langsung dari Supabase – Tabel <strong>penyiraman1</strong>
+    </footer>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", async () => {
+      const supabaseUrl = 'https://uyvyeemtngkdxbhxsbwy.supabase.co';
+      const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV5dnllZW10bmdrZHhiaHhzYnd5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc5ODYzNjgsImV4cCI6MjA2MzU2MjM2OH0.SYNSUM9MjKIBOwqVXWtBkF5FDhLxWyf_chTAglQ5dFU';
+      const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+      const tableBody = document.getElementById('data-body');
+
+      const { data, error } = await supabase
+        .from('penyiraman1')
+        .select('*')
+        .order('id', { ascending: false })
+        .limit(10);
+
+      if (error) {
+        console.error('Gagal mengambil data:', error);
+        tableBody.innerHTML = `<tr><td colspan="3">Gagal memuat data.</td></tr>`;
+        return;
+      }
+
+      if (data.length > 0) {
+        tableBody.innerHTML = data.map(row => `
+          <tr>
+            <td>${row.id}</td>
+            <td>${parseFloat(row.suhu).toFixed(1)}</td>
+            <td>${parseFloat(row.kelembaban).toFixed(1)}</td>
+          </tr>
+        `).join('');
+      } else {
+        tableBody.innerHTML = `<tr><td colspan="3">Data tidak tersedia.</td></tr>`;
+      }
+    });
+  </script>
+</body>
+</html>
