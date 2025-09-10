@@ -81,7 +81,7 @@
     <table>
       <thead>
         <tr>
-          <th>ID</th>
+          <th>Waktu</th>
           <th>Suhu (°C)</th>
           <th>Kelembaban (%)</th>
         </tr>
@@ -121,13 +121,19 @@
       }
 
       if (data.length > 0) {
-        tableBody.innerHTML = data.map(row => `
-          <tr>
-            <td>${row.id}</td>
-            <td>${parseFloat(row.suhu).toFixed(1)}</td>
-            <td>${parseFloat(row.kelembaban).toFixed(1)}</td>
-          </tr>
-        `).join('');
+        tableBody.innerHTML = data.map(row => {
+          const tanggal = new Date(row.created_at).toLocaleString("id-ID", {
+            dateStyle: "short",
+            timeStyle: "medium"
+          });
+          return `
+            <tr>
+              <td>${tanggal}</td>
+              <td>${parseFloat(row.suhu).toFixed(1)}</td>
+              <td>${parseFloat(row.kelembaban).toFixed(1)}</td>
+            </tr>
+          `;
+        }).join('');
       } else {
         tableBody.innerHTML = `<tr><td colspan="3">Data tidak tersedia.</td></tr>`;
       }
